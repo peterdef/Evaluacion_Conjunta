@@ -42,4 +42,69 @@ public class Agricultor {
     protected void onCreate() {
         fechaRegistro = LocalDateTime.now();
     }
+
+    // Explicit getters and setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getAgricultorId() {
+        return agricultorId;
+    }
+
+    public void setAgricultorId(String agricultorId) {
+        this.agricultorId = agricultorId;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getFinca() {
+        return finca;
+    }
+
+    public void setFinca(String finca) {
+        this.finca = finca;
+    }
+
+    public String getUbicacion() {
+        return ubicacion;
+    }
+
+    public void setUbicacion(String ubicacion) {
+        this.ubicacion = ubicacion;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public LocalDateTime getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDateTime fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public List<Cosecha> getCosechas() {
+        return cosechas;
+    }
+
+    public void setCosechas(List<Cosecha> cosechas) {
+        this.cosechas = cosechas;
+    }
 }

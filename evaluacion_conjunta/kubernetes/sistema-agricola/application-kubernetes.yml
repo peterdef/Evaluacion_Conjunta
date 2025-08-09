@@ -1,0 +1,99 @@
+# Configuración para el perfil de Kubernetes
+spring:
+  profiles:
+    active: kubernetes
+  
+  # Configuración de Eureka
+  cloud:
+    discovery:
+      enabled: true
+    loadbalancer:
+      ribbon:
+        enabled: false
+
+# Configuración de Eureka Client
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+# Configuración de RabbitMQ
+spring:
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+
+# Configuración de bases de datos
+  datasource:
+    # PostgreSQL para Agricultura
+    url: jdbc:postgresql://postgres:5432/agricultura
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    
+    # MySQL para Inventario
+    # url: jdbc:mysql://mysql:3306/inventario
+    # username: user
+    # password: password
+    # driver-class-name: com.mysql.cj.jdbc.Driver
+    
+    # MariaDB para Facturación
+    # url: jdbc:mysql://mariadb:3306/facturacion
+    # username: user
+    # password: password
+    # driver-class-name: org.mariadb.jdbc.Driver
+
+# Configuración de MongoDB para Notificaciones
+  data:
+    mongodb:
+      uri: mongodb://mongodb:27017/notificaciones
+
+# Configuración de JPA/Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        # dialect: org.hibernate.dialect.MySQLDialect
+        # dialect: org.hibernate.dialect.MariaDBDialect
+
+# Configuración del servidor
+server:
+  port: 8080
+  # Puerto específico para cada microservicio
+  # agricultura: 8080
+  # inventario: 8081
+  # facturacion: 8082
+  # notificaciones: 8083
+  # eureka-server: 8761
+  # api-gateway: 8084
+
+# Configuración de logging
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud: DEBUG
+    org.springframework.web: DEBUG
+    com.netflix.eureka: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Configuración de health checks
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+

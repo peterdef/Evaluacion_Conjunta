@@ -44,4 +44,69 @@ public class Cosecha {
         cosechaId = UUID.randomUUID().toString();
         creadoEn = LocalDateTime.now();
     }
+
+    // Explicit getters and setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCosechaId() {
+        return cosechaId;
+    }
+
+    public void setCosechaId(String cosechaId) {
+        this.cosechaId = cosechaId;
+    }
+
+    public Agricultor getAgricultor() {
+        return agricultor;
+    }
+
+    public void setAgricultor(Agricultor agricultor) {
+        this.agricultor = agricultor;
+    }
+
+    public String getProducto() {
+        return producto;
+    }
+
+    public void setProducto(String producto) {
+        this.producto = producto;
+    }
+
+    public BigDecimal getToneladas() {
+        return toneladas;
+    }
+
+    public void setToneladas(BigDecimal toneladas) {
+        this.toneladas = toneladas;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getFacturaId() {
+        return facturaId;
+    }
+
+    public void setFacturaId(String facturaId) {
+        this.facturaId = facturaId;
+    }
+
+    public LocalDateTime getCreadoEn() {
+        return creadoEn;
+    }
+
+    public void setCreadoEn(LocalDateTime creadoEn) {
+        this.creadoEn = creadoEn;
+    }
 }

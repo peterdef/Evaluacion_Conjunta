@@ -1,269 +1,276 @@
-# Sistema Agrícola - Microservicios
+# 🚀 Guía de Despliegue en Kubernetes - Sistema Agrícola
 
-## Descripción
-Sistema de gestión agrícola basado en microservicios que implementa el flujo:
-**COSECHA -> INVENTARIO -> FACTURA -> NOTIFICACIÓN**
+UNIVERSIDAD DE LAS FUERZAS ARMADAS ESPE
+Integrantes:
+* Alisson Armijos
+* Peter Defaz
 
-## Arquitectura
+- ✅ **Docker Desktop** (con Kubernetes habilitado)
+- ✅ **kubectl** (cliente de Kubernetes)
+- ✅ **Java 21** y **Maven 3.9.11**
+- ✅ **PowerShell** (para ejecutar los scripts)
 
-### Microservicios
-1. **ms-agricultura** (Puerto 8080) - Gestión de agricultores y cosechas
-2. **ms-inventario** (Puerto 8081) - Control de stock de insumos
-3. **ms-facturacion** (Puerto 8082) - Generación de facturas
-4. **ms-notificaciones** (Puerto 8083) - Sistema de notificaciones
-5. **ms-eureka-server** (Puerto 8761) - Servidor de descubrimiento
-6. **ms-api-gateway** (Puerto 8084) - Gateway de servicios
+## 🔧 Paso 1: Preparar el Entorno
 
-### Bases de Datos
-- **PostgreSQL** - Microservicio de agricultura
-- **MySQL** - Microservicio de inventario  
-- **MariaDB** - Microservicio de facturación
-- **MongoDB** - Microservicio de notificaciones
+### 1.1 Verificar Kubernetes
+```powershell
+# Verificar que kubectl esté disponible
+kubectl version --client
 
-### Message Broker
-- **RabbitMQ** - Comunicación asíncrona entre servicios
-
-## Flujo del Sistema
-
-1. **Registro de Cosecha**: Agricultor registra una nueva cosecha
-2. **Procesamiento de Inventario**: Se descuentan insumos automáticamente
-3. **Generación de Factura**: Se calcula y genera la factura
-4. **Notificación**: Se envía notificación al agricultor
-
-## Instalación y Configuración
-
-### Prerrequisitos
-- Java 21
-- Maven
-- Docker y Docker Compose
-- Python 3.8+ (para pruebas)
-
-### 1. Configurar Bases de Datos
-
-```bash
-# PostgreSQL para agricultura
-docker run -d --name postgres-agricultura \
-  -e POSTGRES_DB=agricultura_db \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -p 5432:5432 postgres:14
-
-# MySQL para inventario
-docker run -d --name mysql-inventario \
-  -e MYSQL_DATABASE=inventario_db \
-  -e MYSQL_ROOT_PASSWORD=root \
-  -p 3306:3306 mysql:8
-
-# MariaDB para facturación
-docker run -d --name mariadb-facturacion \
-  -e MYSQL_DATABASE=facturacion_db \
-  -e MYSQL_ROOT_PASSWORD=root \
-  -p 3307:3306 mariadb:10.11
-
-# MongoDB para notificaciones
-docker run -d --name mongodb-notificaciones \
-  -e MONGO_INITDB_DATABASE=notificaciones_db \
-  -p 27017:27017 mongo:6
+# Verificar que el cluster esté funcionando
+kubectl cluster-info
 ```
 
-### 2. Configurar RabbitMQ
+### 1.2 Habilitar Kubernetes en Docker Desktop
+1. Abrir Docker Desktop
+2. Ir a Settings > Kubernetes
+3. Marcar "Enable Kubernetes"
+4. Aplicar y reiniciar
 
-```bash
-docker run -d --name rabbitmq \
-  -p 5672:5672 \
-  -p 15672:15672 \
-  rabbitmq:3-management
+## 🏗️ Paso 2: Construir Imágenes Docker
+
+### 2.1 Ejecutar Script de Construcción
+```powershell
+# Desde el directorio raíz del proyecto
+.\build-images.ps1
 ```
 
-### 3. Compilar Microservicios
+Este script:
+- ✅ Compila todos los microservicios con Maven
+- ✅ Construye las imágenes Docker
+- ✅ Etiqueta las imágenes con `sistema-agricola/`
 
-```bash
-# Microservicio de agricultura
-cd api-publicaciones
-mvn clean package
-
-# Microservicio de inventario
-cd ../ms-inventario
-mvn clean package
-
-# Microservicio de facturación
-cd ../ms-facturacion
-mvn clean package
-
-# Microservicio de notificaciones
-cd ../ms-notificaciones
-mvn clean package
+### 2.2 Verificar Imágenes Construidas
+```powershell
+docker images | findstr sistema-agricola
 ```
 
-### 4. Ejecutar Microservicios
+Deberías ver:
+- `sistema-agricola/eureka-server:latest`
+- `sistema-agricola/api-gateway:latest`
+- `sistema-agricola/agricultura:latest`
+- `sistema-agricola/inventario:latest`
+- `sistema-agricola/facturacion:latest`
+- `sistema-agricola/notificaciones:latest`
 
-```bash
-# 1. Eureka Server
-cd ms-eureka-server
-mvn spring-boot:run
+## 🚀 Paso 3: Desplegar en Kubernetes
 
-# 2. API Gateway
-cd ../ms-api-gateway
-mvn spring-boot:run
-
-# 3. Microservicio de agricultura
-cd ../api-publicaciones
-mvn spring-boot:run
-
-# 4. Microservicio de inventario
-cd ../ms-inventario
-mvn spring-boot:run
-
-# 5. Microservicio de facturación
-cd ../ms-facturacion
-mvn spring-boot:run
-
-# 6. Microservicio de notificaciones
-cd ../ms-notificaciones
-mvn spring-boot:run
+### 3.1 Ejecutar Script de Despliegue
+```powershell
+# Desde el directorio raíz del proyecto
+.\deploy-kubernetes.ps1
 ```
 
-## Pruebas del Sistema
+Este script:
+- ✅ Crea el namespace `sistema-agricola`
+- ✅ Despliega todas las bases de datos
+- ✅ Despliega todos los microservicios
+- ✅ Configura el Ingress
 
-### Script de Prueba Automatizado
+### 3.2 Verificar el Despliegue
+```powershell
+# Ver pods
+kubectl get pods -n sistema-agricola
 
-```bash
-python test-flujo-agricola.py
+# Ver servicios
+kubectl get services -n sistema-agricola
+
+# Ver deployments
+kubectl get deployments -n sistema-agricola
 ```
 
-### Pruebas Manuales
+## 🧪 Paso 4: Probar el Sistema
 
-#### 1. Crear Agricultor
-```bash
-curl -X POST http://localhost:8080/agricultores \
-  -H "Content-Type: application/json" \
-  -d '{
-    "agricultorId": "AGR-001",
-    "nombre": "Juan Pérez",
-    "finca": "Finca El Paraíso",
-    "ubicacion": "9.7489°N, 83.7534°W",
-    "correo": "juan.perez@email.com"
-  }'
+### 4.1 Ejecutar Script de Pruebas
+```powershell
+# Desde el directorio raíz del proyecto
+.\test-kubernetes.ps1
 ```
 
-#### 2. Crear Insumos
-```bash
-curl -X POST http://localhost:8081/insumos \
-  -H "Content-Type: application/json" \
-  -d '{
-    "nombreInsumo": "Semilla Arroz L-23",
-    "stock": 1000,
-    "categoria": "Semilla"
-  }'
+Este script:
+- ✅ Verifica que todos los servicios estén disponibles
+- ✅ Ejecuta el flujo completo del sistema
+- ✅ Crea agricultor, insumo y cosecha
+- ✅ Valida la comunicación entre microservicios
+
+### 4.2 Pruebas Manuales
+
+#### Acceder a Eureka Dashboard
+```
+http://localhost:30761
 ```
 
-#### 3. Registrar Cosecha (dispara el flujo completo)
-```bash
-curl -X POST http://localhost:8080/cosechas \
-  -H "Content-Type: application/json" \
-  -d '{
-    "agricultorId": "AGR-001",
-    "producto": "Arroz Oro",
-    "toneladas": 12.5,
-    "ubicacion": "9.7489°N, 83.7534°W"
-  }'
+#### Acceder a API Gateway
+```
+http://localhost:30084
 ```
 
-## Endpoints Principales
+#### Acceder a RabbitMQ Management
+```
+http://localhost:15672
+Usuario: guest
+Contraseña: guest
+```
 
-### Microservicio de Agricultura (8080)
-- `GET /agricultores` - Listar agricultores
+## 📊 Monitoreo y Logs
+
+### 4.1 Ver Logs de Microservicios
+```powershell
+# Logs de Agricultura
+kubectl logs -f deployment/agricultura -n sistema-agricola
+
+# Logs de Inventario
+kubectl logs -f deployment/inventario -n sistema-agricola
+
+# Logs de Facturación
+kubectl logs -f deployment/facturacion -n sistema-agricola
+
+# Logs de Notificaciones
+kubectl logs -f deployment/notificaciones -n sistema-agricola
+```
+
+### 4.2 Ver Estado de Recursos
+```powershell
+# Estado general
+kubectl get all -n sistema-agricola
+
+# Descripción detallada de pods
+kubectl describe pods -n sistema-agricola
+
+# Métricas de recursos
+kubectl top pods -n sistema-agricola
+```
+
+## 🔄 Flujo del Sistema
+
+El sistema funciona de la siguiente manera:
+
+1. **👨‍🌾 Agricultor** registra una cosecha
+2. **📦 Inventario** descuenta insumos automáticamente
+3. **💰 Facturación** genera factura
+4. **📧 Notificaciones** envía notificación al agricultor
+
+### Endpoints Disponibles
+
+#### Agricultura (Puerto 30084)
 - `POST /agricultores` - Crear agricultor
-- `GET /cosechas` - Listar cosechas
+- `GET /agricultores` - Listar agricultores
 - `POST /cosechas` - Registrar cosecha
+- `GET /cosechas` - Listar cosechas
 
-### Microservicio de Inventario (8081)
-- `GET /insumos` - Listar insumos
+#### Inventario (Puerto 30084)
 - `POST /insumos` - Crear insumo
-- `PUT /insumos/stock/{nombreInsumo}` - Actualizar stock
+- `GET /insumos` - Listar insumos
+- `PUT /insumos/{id}` - Actualizar stock
 
-### Microservicio de Facturación (8082)
+#### Facturación (Puerto 30084)
 - `GET /facturas` - Listar facturas
-- `POST /facturas` - Crear factura
-- `GET /facturas/cosecha/{cosechaId}` - Buscar por cosecha
+- `GET /facturas/{id}` - Obtener factura
 
-### Microservicio de Notificaciones (8083)
+#### Notificaciones (Puerto 30084)
 - `GET /notificaciones` - Listar notificaciones
 
-## Docker
+## 🛠️ Solución de Problemas
 
-### Construir Imágenes
-```bash
-# Agricultura
-cd api-publicaciones
-docker build -t ms-agricultura:v1.0 .
+### Problema: Pods no inician
+```powershell
+# Verificar eventos
+kubectl get events -n sistema-agricola
 
-# Inventario
-cd ../ms-inventario
-docker build -t ms-inventario:v1.0 .
+# Verificar logs de pods
+kubectl logs <pod-name> -n sistema-agricola
 
-# Facturación
-cd ../ms-facturacion
-docker build -t ms-facturacion:v1.0 .
+# Verificar descripción del pod
+kubectl describe pod <pod-name> -n sistema-agricola
 ```
 
-### Publicar en Docker Hub
-```bash
-docker tag ms-agricultura:v1.0 tu-usuario/ms-agricultura:v1.0
-docker push tu-usuario/ms-agricultura:v1.0
+### Problema: Servicios no se comunican
+```powershell
+# Verificar conectividad entre pods
+kubectl exec -it <pod-name> -n sistema-agricola -- ping <service-name>
 
-docker tag ms-inventario:v1.0 tu-usuario/ms-inventario:v1.0
-docker push tu-usuario/ms-inventario:v1.0
-
-docker tag ms-facturacion:v1.0 tu-usuario/ms-facturacion:v1.0
-docker push tu-usuario/ms-facturacion:v1.0
+# Verificar DNS
+kubectl exec -it <pod-name> -n sistema-agricola -- nslookup <service-name>
 ```
 
-## Kubernetes
-
-Los archivos de configuración de Kubernetes se encuentran en la carpeta `kubernetes/`.
-
-### Desplegar en Kubernetes
-```bash
-kubectl apply -f kubernetes/
+### Problema: Bases de datos no conectan
+```powershell
+# Verificar estado de bases de datos
+kubectl get pods -l app=postgres -n sistema-agricola
+kubectl get pods -l app=mysql -n sistema-agricola
+kubectl get pods -l app=mariadb -n sistema-agricola
+kubectl get pods -l app=mongodb -n sistema-agricola
 ```
 
-## Monitoreo
+## 🧹 Limpieza
 
-- **Eureka Dashboard**: http://localhost:8761
-- **RabbitMQ Management**: http://localhost:15672 (guest/guest)
+### Eliminar Todo el Sistema
+```powershell
+# Eliminar namespace completo
+kubectl delete namespace sistema-agricola
 
-## Estructura del Proyecto
-
-```
-evaluacion_conjunta/
-├── api-publicaciones/          # Microservicio de agricultura
-├── ms-inventario/             # Microservicio de inventario
-├── ms-facturacion/            # Microservicio de facturación
-├── ms-notificaciones/         # Microservicio de notificaciones
-├── ms-eureka-server/          # Servidor de descubrimiento
-├── ms-api-gateway/            # Gateway de servicios
-├── kubernetes/                # Configuraciones de K8s
-├── test-flujo-agricola.py    # Script de pruebas
-└── README.md                 # Este archivo
+# Eliminar imágenes Docker
+docker rmi sistema-agricola/eureka-server:latest
+docker rmi sistema-agricola/api-gateway:latest
+docker rmi sistema-agricola/agricultura:latest
+docker rmi sistema-agricola/inventario:latest
+docker rmi sistema-agricola/facturacion:latest
+docker rmi sistema-agricola/notificaciones:latest
 ```
 
-## Tecnologías Utilizadas
+## 📁 Estructura de Archivos Kubernetes
 
-- **Backend**: Spring Boot 3.5.3, Java 21
-- **Bases de Datos**: PostgreSQL, MySQL, MariaDB, MongoDB
-- **Message Broker**: RabbitMQ
-- **Service Discovery**: Netflix Eureka
-- **API Gateway**: Spring Cloud Gateway
-- **Containerización**: Docker
-- **Orquestación**: Kubernetes
-- **Testing**: Python Requests
+```
+kubernetes/sistema-agricola/
+├── 1-namespace.yml           # Namespace del sistema
+├── 2-databases.yml           # Bases de datos (PostgreSQL, MySQL, MariaDB, MongoDB, RabbitMQ)
+├── 3-microservicios.yml      # Microservicios (Eureka, Gateway, Agricultura, Inventario, Facturación, Notificaciones)
+└── 4-ingress.yml            # Configuración de Ingress
+```
 
-## Autores
+## 🎯 Comandos Útiles
 
-- [Tu Nombre]
-- [Nombre del Grupo]
+### Verificar Estado del Sistema
+```powershell
+# Estado general
+kubectl get all -n sistema-agricola
 
-## Licencia
+# Verificar conectividad
+kubectl port-forward service/api-gateway 30084:8084 -n sistema-agricola
 
-Este proyecto es parte de la evaluación conjunta de Arquitectura de Software.
+# Acceder a un pod específico
+kubectl exec -it <pod-name> -n sistema-agricola -- /bin/bash
+```
+
+### Escalar Microservicios
+```powershell
+# Escalar Agricultura a 3 réplicas
+kubectl scale deployment agricultura --replicas=3 -n sistema-agricola
+
+# Escalar Inventario a 2 réplicas
+kubectl scale deployment inventario --replicas=2 -n sistema-agricola
+```
+
+## ✅ Verificación Final
+
+Para verificar que todo funciona correctamente:
+
+1. **Eureka Dashboard**: Debe mostrar todos los servicios registrados
+2. **API Gateway**: Debe responder a peticiones HTTP
+3. **RabbitMQ Management**: Debe mostrar las colas creadas
+4. **Script de pruebas**: Debe ejecutar el flujo completo sin errores
+5. **Logs**: Deben mostrar el procesamiento de eventos
+
+¡El sistema agrícola está ahora ejecutándose en Kubernetes! 🎉
+
+## 📞 Soporte
+
+Si encuentras problemas:
+
+1. Verifica que Docker Desktop tenga Kubernetes habilitado
+2. Asegúrate de que todos los prerrequisitos estén instalados
+3. Revisa los logs de los pods para identificar errores
+4. Verifica la conectividad entre servicios
+
+¡El sistema está listo para producción! 🚀
+

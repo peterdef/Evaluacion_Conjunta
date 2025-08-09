@@ -1,16 +1,20 @@
 server:
-  port: 0
+  port: 8083
 
 spring:
   application:
     name: servicio-notificaciones
   datasource:
+    url: jdbc:h2:mem:notificaciones_db
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
     #url: jdbc:postgresql://localhost:5432/notificaciones_db
     #username: postgres
     #password: qwerty123
-    url: jdbc:postgresql://localhost:26257/notificaciones_db?user=root&password=
-    username: root
-    password:
+    #url: jdbc:postgresql://localhost:26257/notificaciones_db?user=root&password=
+    #username: root
+    #password:
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -18,13 +22,16 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
 
   rabbitmq:
     host: localhost
     port: 5672
-    username: admin
-    password: admin
+    username: guest
+    password: guest
 
 eureka:
   client:

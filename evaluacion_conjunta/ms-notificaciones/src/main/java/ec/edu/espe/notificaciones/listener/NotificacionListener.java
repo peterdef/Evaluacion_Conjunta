@@ -1,6 +1,6 @@
 package ec.edu.espe.notificaciones.listener;
 
-import ec.edu.espe.notificaciones.entity.Notificacion;
+import ec.edu.espe.notificaciones.dto.NotificacionDto;
 import ec.edu.espe.notificaciones.service.NotificacionService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +14,16 @@ public class NotificacionListener {
     @Autowired
     private NotificacionService notificacionService;
 
-    @RabbitListener(queues = "cola_notificaciones")
+    @RabbitListener(queues = "queue.notificaciones")
     public void procesarNotificacion(String mensaje) {
         try {
             System.out.println("Procesando notificación: " + mensaje);
             
-            Notificacion notificacion = new Notificacion();
-            notificacion.setMensaje(mensaje);
-            notificacion.setTipo("AGRICULTURA");
-            notificacion.setFechaCreacion(LocalDateTime.now());
+            NotificacionDto notificacionDto = new NotificacionDto();
+            notificacionDto.setMensaje(mensaje);
+            notificacionDto.setTipo("AGRICULTURA");
             
-            notificacionService.guardarNotificacion(notificacion);
+            notificacionService.guardarNotificacion(notificacionDto);
             
             System.out.println("Notificación guardada exitosamente");
             

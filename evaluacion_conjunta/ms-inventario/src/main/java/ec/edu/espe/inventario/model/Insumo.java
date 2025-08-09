@@ -3,6 +3,8 @@ package ec.edu.espe.inventario.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -10,12 +12,14 @@ import java.util.UUID;
 @Entity(name = "insumos")
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Insumo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "insumo_id", unique = true, nullable = false)
+    @Column(name = "insumo_id", unique = true, nullable = true)
     private String insumoId;
 
     @Column(name = "nombre_insumo", unique = true, nullable = false, length = 100)

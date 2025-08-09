@@ -33,4 +33,45 @@ public class AgricultorDto {
     @Email(message = "El formato del correo no es válido")
     @Size(max = 150, message = "El correo no puede exceder 150 caracteres")
     private String correo;
+
+    // Explicit getters and setters
+    public String getAgricultorId() {
+        return agricultorId;
+    }
+
+    public void setAgricultorId(String agricultorId) {
+        this.agricultorId = agricultorId;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getFinca() {
+        return finca;
+    }
+
+    public void setFinca(String finca) {
+        this.finca = finca;
+    }
+
+    public String getUbicacion() {
+        return ubicacion;
+    }
+
+    public void setUbicacion(String ubicacion) {
+        this.ubicacion = ubicacion;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
 }
